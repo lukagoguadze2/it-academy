@@ -5,12 +5,24 @@ import requests
 
 
 class CurrencyConverterApp:
+    show_only_country_currency: bool
     __INT64_MAX = 2**63 - 1
     __DEFAULT_FROM_CURRENCY = "USD"
     __DEFAULT_TO_CURRENCY = "GEL"
-    __ALL_CURRENCIES_URL  = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies.json"
+    __ALL_CURRENCIES_URL = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies.json"
     __SINGLE_CURRENCY_URL = __ALL_CURRENCIES_URL.replace('.json', '') + "/{currency_code}.json"
-    country_currencies = ['USD', 'CAD', 'EUR', 'AED', 'AFN', 'ALL', 'AMD', 'ARS', 'AUD', 'AZN', 'BAM', 'BDT', 'BGN', 'BHD', 'BIF', 'BND', 'BOB', 'BRL', 'BWP', 'BYN', 'BZD', 'CDF', 'CHF', 'CLP', 'CNY', 'COP', 'CRC', 'CVE', 'CZK', 'DJF', 'DKK', 'DOP', 'DZD', 'EEK', 'EGP', 'ERN', 'ETB', 'GBP', 'GEL', 'GHS', 'GNF', 'GTQ', 'HKD', 'HNL', 'HRK', 'HUF', 'IDR', 'ILS', 'INR', 'IQD', 'IRR', 'ISK', 'JMD', 'JOD', 'JPY', 'KES', 'KHR', 'KMF', 'KRW', 'KWD', 'KZT', 'LBP', 'LKR', 'LTL', 'LVL', 'LYD', 'MAD', 'MDL', 'MGA', 'MKD', 'MMK', 'MOP', 'MUR', 'MXN', 'MYR', 'MZN', 'NAD', 'NGN', 'NIO', 'NOK', 'NPR', 'NZD', 'OMR', 'PAB', 'PEN', 'PHP', 'PKR', 'PLN', 'PYG', 'QAR', 'RON', 'RSD', 'RUB', 'RWF', 'SAR', 'SDG', 'SEK', 'SGD', 'SOS', 'SYP', 'THB', 'TND', 'TOP', 'TRY', 'TTD', 'TWD', 'TZS', 'UAH', 'UGX', 'UYU', 'UZS', 'VEF', 'VND', 'XAF', 'XOF', 'YER', 'ZAR', 'ZMK', 'ZWL']
+    country_currencies = [
+        'USD', 'CAD', 'EUR', 'AED', 'AFN', 'ALL', 'AMD', 'ARS', 'AUD', 'AZN', 'BAM', 'BDT', 'BGN',
+        'BHD', 'BIF', 'BND', 'BOB', 'BRL', 'BWP', 'BYN', 'BZD', 'CDF', 'CHF', 'CLP', 'CNY', 'COP',
+        'CRC', 'CVE', 'CZK', 'DJF', 'DKK', 'DOP', 'DZD', 'EEK', 'EGP', 'ERN', 'ETB', 'GBP', 'GEL',
+        'GHS', 'GNF', 'GTQ', 'HKD', 'HNL', 'HRK', 'HUF', 'IDR', 'ILS', 'INR', 'IQD', 'IRR', 'ISK',
+        'JMD', 'JOD', 'JPY', 'KES', 'KHR', 'KMF', 'KRW', 'KWD', 'KZT', 'LBP', 'LKR', 'LTL', 'LVL',
+        'LYD', 'MAD', 'MDL', 'MGA', 'MKD', 'MMK', 'MOP', 'MUR', 'MXN', 'MYR', 'MZN', 'NAD', 'NGN',
+        'NIO', 'NOK', 'NPR', 'NZD', 'OMR', 'PAB', 'PEN', 'PHP', 'PKR', 'PLN', 'PYG', 'QAR', 'RON',
+        'RSD', 'RUB', 'RWF', 'SAR', 'SDG', 'SEK', 'SGD', 'SOS', 'SYP', 'THB', 'TND', 'TOP', 'TRY',
+        'TTD', 'TWD', 'TZS', 'UAH', 'UGX', 'UYU', 'UZS', 'VEF', 'VND', 'XAF', 'XOF', 'YER', 'ZAR',
+        'ZMK', 'ZWL'
+    ]
 
     def __init__(self, width: int = 600, height: int = 400, cache_validity_seconds: int = 3600) -> None:
         """
@@ -25,13 +37,41 @@ class CurrencyConverterApp:
         self.height = height
         
         self._cache_validity_seconds = cache_validity_seconds
-        self.show_only_country_currency = False
+        self.show_only_country_currency: bool = False
 
         self.cache = {}
         self.currency_names = {}
         self.root = tk.Tk()
         self.root.title("ვალუტის კონვერტორი")
-        
+
+        # Entries
+        self.amount_entry: tk.Entry | None = None
+        self.from_currency_entry: tk.Entry | None = None
+        self.to_currency_entry: tk.Entry | None = None
+
+        # Buttons
+        self.settings_button: tk.Button | None = None
+        self.from_button: tk.Button | None = None
+        self.to_button: tk.Button | None = None
+        self.convert_button: tk.Button | None = None
+        self.clear_button: tk.Button | None = None
+
+        # StringVars
+        self.from_currency: tk.StringVar | None = None
+        self.to_currency: tk.StringVar | None = None
+
+        # ComboBoxes
+        self.from_currency_dropdown: ttk.Combobox | None = None
+        self.to_currency_dropdown: ttk.Combobox | None = None
+
+        # Labels
+        self.from_currency_validation_label: tk.Label | None = None
+        self.to_currency_validation_label: tk.Label | None = None
+        self.result_label: tk.Label | None = None
+        self.from_currency_label: tk.Label | None = None
+        self.to_currency_label: tk.Label | None = None
+
+        # Style
         style = ttk.Style()
         style.theme_use("clam")
         style.configure("TFrame", background="#f0f0f0", relief=tk.FLAT)
@@ -69,12 +109,18 @@ class CurrencyConverterApp:
         self.root.rowconfigure(6, weight=1)
 
         # სტატიკური ელემენტები
-        self.static1 = ttk.Label(self.root, text="ვალუტის კონვერტორი", anchor='center', font=("Sylfaen", 15, "bold")).grid(column=0, row=0, columnspan=3, padx=10, pady=10, sticky='ew')
-        self.static2 = ttk.Label(self.root, text="თანხა:").grid(column=0, row=1, padx=10, pady=10, sticky='w')
-        self.static3 = ttk.Label(self.root, text="საბაზისო ვალუტა:").grid(column=0, row=2, padx=10, pady=10, sticky='w')
-        self.static4 = ttk.Label(self.root, text="კონვერტაციის ვალუტა:").grid(column=0, row=3, padx=10, pady=10, sticky='w')
+        ttk.Label(self.root, text="ვალუტის კონვერტორი", anchor='center', font=("Sylfaen", 15, "bold")).grid(
+            column=0, row=0, columnspan=3, padx=10, pady=10, sticky='ew'
+        )
+        ttk.Label(self.root, text="თანხა:").grid(column=0, row=1, padx=10, pady=10, sticky='w')
+        ttk.Label(self.root, text="საბაზისო ვალუტა:").grid(column=0, row=2, padx=10, pady=10, sticky='w')
+        ttk.Label(self.root, text="კონვერტაციის ვალუტა:").grid(
+            column=0, row=3, padx=10, pady=10, sticky='w'
+        )
         
-        self.settings_button = ttk.Button(self.root, text="პარამეტრები", command=self.open_settings_window).grid(column=0, row=0, padx=10, pady=10, sticky='w')
+        self.settings_button = ttk.Button(self.root, text="პარამეტრები", command=self.open_settings_window).grid(
+            column=0, row=0, padx=10, pady=10, sticky='w'
+        )
 
         # შეყვანის ველი
         self.amount_entry = tk.Entry(self.root)
@@ -101,12 +147,22 @@ class CurrencyConverterApp:
         self.to_currency_dropdown.bind('<KeyRelease>', self.validate_to_currency)
         self.to_currency_dropdown.bind('<<ComboboxSelected>>', self.validate_to_currency)
 
-        self.from_currency_validation_label = ttk.Label(self.root, text=self.currency_names.get(self.__DEFAULT_FROM_CURRENCY.lower(), 'ვალუტა ვერ მოიძებნა'), width=30, anchor='w')
+        self.from_currency_validation_label = ttk.Label(
+            self.root, 
+            text=self.currency_names.get(self.__DEFAULT_FROM_CURRENCY.lower(), 'ვალუტა ვერ მოიძებნა'), 
+            width=30, 
+            anchor='w'
+        )
         self.from_currency_validation_label.grid(column=2, row=2, padx=10, pady=10, sticky='w')
         self.from_currency_validation_label.config(wraplength=200)
 
         # ვალიდაციის Labels
-        self.to_currency_validation_label = ttk.Label(self.root, text=self.currency_names.get(self.__DEFAULT_TO_CURRENCY.lower(), 'ვალუტა ვერ მოიძებნა'), width=30, anchor='w')
+        self.to_currency_validation_label = ttk.Label(
+            self.root, 
+            text=self.currency_names.get(self.__DEFAULT_TO_CURRENCY.lower(), 'ვალუტა ვერ მოიძებნა'), 
+            width=30, 
+            anchor='w'
+        )
         self.to_currency_validation_label.grid(column=2, row=3, padx=10, pady=10, sticky='w')
         self.to_currency_validation_label.config(wraplength=200)
         
@@ -122,35 +178,39 @@ class CurrencyConverterApp:
         self.result_label = ttk.Label(self.root, text="კონვერტირებული თანხა:")
         self.result_label.grid(column=0, row=5, columnspan=3, padx=15, pady=10, sticky='w')
 
-        self.replace_Combobox_values()
+        self.replace_combobox_values()
 
-    def validate_from_currency(self, event: tk.Event) -> None:
+    def validate_from_currency(self, event) -> None:
         """
         ამოწმებს "from_currency" ველში შეყვანილ ტექსტს და შესაბამისად განაახლებს ვალიდაციის ლეიბლის ტექსტს.
         """
 
         code = self.from_currency.get().lower()
         if code in self.currency_names:
-            self.from_currency_validation_label.config(text=self.currency_names[code] if self.currency_names[code].strip() else 'ვალუტა მოიძებნა')
+            self.from_currency_validation_label.config(
+                text=self.currency_names[code] if self.currency_names[code].strip() else 'ვალუტა მოიძებნა'
+            )
         else:
             self.from_currency_validation_label.config(text="ვალუტა ვერ მოიძებნა")
 
         self.from_currency.set(self.from_currency.get().upper())
 
-    def validate_to_currency(self, event: tk.Event) -> None:
+    def validate_to_currency(self, event) -> None:
         """
         ამოწმებს "to_currency" ველში შეყვანილ ტექსტს და შესაბამისად განაახლებს ვალიდაციის ლეიბლის ტექსტს.
         """
 
         code = self.to_currency.get().lower()
         if code in self.currency_names:
-            self.to_currency_validation_label.config(text=self.currency_names[code] if self.currency_names[code].strip() else 'ვალუტა მოიძებნა')
+            self.to_currency_validation_label.config(
+                text=self.currency_names[code] if self.currency_names[code].strip() else 'ვალუტა მოიძებნა'
+            )
         else:
             self.to_currency_validation_label.config(text="ვალუტა ვერ მოიძებნა")
 
         self.to_currency.set(self.to_currency.get().upper())
     
-    def replace_Combobox_values(self) -> None:
+    def replace_combobox_values(self) -> None:
         if self.show_only_country_currency:
             self.from_currency_dropdown['values'] = self.country_currencies
             self.to_currency_dropdown['values'] = self.country_currencies
@@ -165,8 +225,11 @@ class CurrencyConverterApp:
         self.result_label.config(text="კონვერტირებული თანხა: მუშავდება...")
         self.root.update_idletasks()
         # ამოწმებს თუ ვალიდაციის ლეიბელებში შეცდომაა
-        if (n:=self.from_currency_validation_label.cget("text") == "ვალუტა ვერ მოიძებნა") or self.to_currency_validation_label.cget("text") == "ვალუტა ვერ მოიძებნა":
-            self.result_label.config(text=f"არასწორი ვალუტის კოდი: {self.from_currency.get().upper() if n else self.to_currency.get().upper()}")
+        if ((n := self.from_currency_validation_label.cget("text") == "ვალუტა ვერ მოიძებნა") or
+                self.to_currency_validation_label.cget("text") == "ვალუტა ვერ მოიძებნა"):
+            self.result_label.config(
+                text="არასწორი ვალუტის კოდი: " +
+                     f"{self.from_currency.get().upper() if n else self.to_currency.get().upper()}")
         else:
             try:
                 result = float(self.amount_entry.get().replace(',', ''))
@@ -188,8 +251,10 @@ class CurrencyConverterApp:
                     self.result_label.config(text=f"კონვერტირებული თანხა: {result:,.2f} {to_currency_code.upper()}")
                     return
 
-                # რექუესტი API სერვერზე ვალუტის კურსების მისაღებად თუ მეხსიერებაში არ გვაქვს ქეში    ან    ქეშის დრო ამოიწურა default: (1 საათი)
-                if not (from_currency_cache:=self.cache.get(from_currency_code)) or (datetime.now(UTC) - from_currency_cache['fetch_time']).seconds > self._cache_validity_seconds:
+                # რექუესტი API სერვერზე ვალუტის კურსების მისაღებად თუ მეხსიერებაში არ გვაქვს ქეში
+                # ან ქეშის დრო ამოიწურა default: (1 საათი)
+                if (not (from_currency_cache := self.cache.get(from_currency_code)) or
+                        (datetime.now(UTC) - from_currency_cache['fetch_time']).seconds > self._cache_validity_seconds):
                     
                     currency_rates = requests.get(
                         self.__SINGLE_CURRENCY_URL.format(
@@ -206,7 +271,8 @@ class CurrencyConverterApp:
                     result = result * rate
                     
                     # ქეშის განახლება
-                    self.cache.update({from_currency_code: {'currency_rate': currency_rates[from_currency_code], 'fetch_time': datetime.now(UTC)}})
+                    self.cache.update({from_currency_code: {'currency_rate': currency_rates[from_currency_code],
+                                                            'fetch_time': datetime.now(UTC)}})
                     
                 else:
                     result = result * self.cache[from_currency_code]['currency_rate'][to_currency_code]
@@ -214,9 +280,9 @@ class CurrencyConverterApp:
                 self.result_label.config(text=f"კონვერტირებული თანხა: {result:,.2f} {to_currency_code.upper()}")
             except AssertionError as e:
                 self.result_label.config(text=str(e))
-            except IndexError as e:
+            except IndexError:
                 self.result_label.config(text='კონვერტირება ვერ მოხერხდა')
-            except ValueError as e:
+            except ValueError:
                 self.result_label.config(text="გთხოვთ, შეიყვანოთ ვალიდური თანხა")
 
     def clear_fields(self) -> None:
@@ -226,8 +292,8 @@ class CurrencyConverterApp:
         
         self.result_label.config(text="კონვერტირებული თანხა:")
 
-        self.validate_from_currency(None)
-        self.validate_to_currency(None)
+        self.validate_from_currency('')
+        self.validate_to_currency('')
 
     def center_window(self, root, window_width: int, window_height: int) -> None:
         screen_width = self.root.winfo_screenwidth()
@@ -273,7 +339,8 @@ class CurrencyConverterApp:
         currency_label.grid(row=0, column=0, padx=10, pady=5)
         
         radio_var = tk.StringVar()
-        radio_var.set(self.show_only_country_currency)
+        str_bool = str(int(self.show_only_country_currency))
+        radio_var.set(str_bool)
         
         radio1 = ttk.Radiobutton(frame, text="კი", variable=radio_var, value=True)
         radio1.grid(row=0, column=1, padx=10, pady=5)
@@ -299,14 +366,13 @@ class CurrencyConverterApp:
                 return
 
             settings_window.destroy()
-            if not self.show_only_country_currency is country_currency:
+            if self.show_only_country_currency is not country_currency:
                 self.show_only_country_currency = country_currency
-                self.replace_Combobox_values()
+                self.replace_combobox_values()
         
         save_button = ttk.Button(settings_window, text="დამახსოვრება", command=save_settings)
         save_button.pack(pady=10)
         settings_window.mainloop()
-
 
 
 if __name__ == "__main__":
