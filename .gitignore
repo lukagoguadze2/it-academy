@@ -1,6 +1,9 @@
 venv/
 env/
 
+cache.txt
+response_times.json
+
 *.ipynb
 *.yaml
 
