@@ -11,3 +11,5 @@ workspace.py
 .idea/
 
 workspace/
+
+__pycache__/
