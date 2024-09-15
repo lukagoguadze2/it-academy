@@ -3,6 +3,7 @@ env/
 
 cache.txt
 response_times.json
+workspace.py
 
 *.ipynb
 *.yaml

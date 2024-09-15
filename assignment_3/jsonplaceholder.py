@@ -12,6 +12,7 @@ class PostFetcher:
             print("WARNING: post_count cannot be greater than 100")
 
         self.file_lock = threading.Lock()
+        self.print_lock = threading.Lock()
         self.response_times = []
         self.output_file = "data.json"
         self.response_file = "response_times.json"
@@ -23,7 +24,7 @@ class PostFetcher:
         # Start time of request
         start_time = time.time()
 
-        with self.file_lock:
+        with self.print_lock:
             print('Sending request to', post_id)
 
         response = requests.get(url)
