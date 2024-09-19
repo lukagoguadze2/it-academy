@@ -13,3 +13,5 @@ workspace.py
 workspace/
 
 __pycache__/
+
+*.sqlite3
