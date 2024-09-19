@@ -27,7 +27,12 @@ class Author(AuthorBase):
             place_of_birth=place_of_birth
         )
 
+        self.__id = _id
         self.validate()
+
+    @property
+    def _id(self) -> Optional[int]:
+        return self.__id
 
     def save(self):
         with DatabaseManager(DATABASE_PATH) as cursor:
@@ -37,10 +42,14 @@ class Author(AuthorBase):
             ''', (self.name, self.last_name, self.date_of_birth, self.place_of_birth))
 
     def __str__(self):
-        return f"Name: {self.name}\n"\
+        return f'{'Id: ' + str(self._id) + '\n' if self._id else ''}'\
+               f"Name: {self.name}\n"\
                f"Last Name: {self.last_name}\n"\
                f"Date: {self.date_of_birth}\n"\
                f"Place: {self.place_of_birth}"
+
+    def __repr__(self):
+        return f"Author({self._id}, {self.name})"
 
 
 class Book(BookBase):
@@ -83,3 +92,6 @@ class Book(BookBase):
                f'Number of pages: {self.number_of_pages}\n'\
                f'Date of issue: {self.date_of_issue}\n'\
                f'Author ID: {self.author_id}'
+
+    def __repr__(self):
+        return f'Book({self._id}, {self.name})'
