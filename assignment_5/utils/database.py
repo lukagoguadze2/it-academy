@@ -1,4 +1,5 @@
 import sqlite3
+import os
 
 from config import DATABASE_PATH
 
@@ -8,6 +9,7 @@ class DatabaseManager:
         self.db_path = db_path
 
     def __enter__(self):
+        os.makedirs(os.path.join(*os.path.split(DATABASE_PATH)[:-1]), exist_ok=True)
         self.conn = sqlite3.connect(self.db_path)
         self.cursor = self.conn.cursor()
         return self.cursor
@@ -40,9 +42,9 @@ def initialize_database() -> None:
         CREATE TABLE IF NOT EXISTS author (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
-            last_name TEXT,
+            last_name TEXT NOT NULL,
             date_of_birth TEXT NOT NULL,
-            place_of_birth TEXT
+            place_of_birth TEXT NOT NULL
         )
         ''')
 

@@ -1,5 +1,3 @@
-import random
-
 from .BaseModels import (
     AuthorBase,
     BookBase,
