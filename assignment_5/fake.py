@@ -18,7 +18,7 @@ def generate_authors(n: int = 500) -> None:
         name = fake.first_name()
         last_name = fake.last_name()
         date_of_birth = fake.date_of_birth(minimum_age=20, maximum_age=80).strftime('%Y-%m-%d')
-        place_of_birth = fake.city()
+        place_of_birth = ' '.join(fake.location_on_land()[2:])
         author = Author(name, last_name, date_of_birth, place_of_birth)
         author_container.add_author(author)
 
