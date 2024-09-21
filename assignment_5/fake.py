@@ -40,7 +40,7 @@ def generate_books(n: int = 1000) -> None:
 
         # Generating valid date of issue
         date_of_issue = fake.date_between(
-            start_date=authors_data[author_id] + timedelta(weeks=51 * 14),
+            start_date=authors_data[author_id] + timedelta(weeks=52 * 14),
             end_date=datetime.now()
         )
         book = Book(name, category_name, number_of_pages, date_of_issue, author_id)

@@ -1,13 +1,9 @@
-import sys
-
 from models import Author, Book
-from config import BASE_DIR, DATABASE_PATH
+from config import DATABASE_PATH
 from fake import generate_authors, generate_books
 from utils.database import DatabaseManager
 
 from utils.database import initialize_database
-
-sys.path.append(BASE_DIR)
 
 
 def get_book_with_most_pages() -> Book | None:

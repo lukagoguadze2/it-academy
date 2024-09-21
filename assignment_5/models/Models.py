@@ -28,7 +28,7 @@ class Author(AuthorBase):
         )
 
         self.__id = _id
-        self.validate()
+        assert self.validate(), "Invalid data"
 
     @property
     def _id(self) -> Optional[int]:
@@ -42,7 +42,7 @@ class Author(AuthorBase):
             ''', (self.name, self.last_name, self.date_of_birth, self.place_of_birth))
 
     def __str__(self):
-        return f'{'Id: ' + str(self._id) + '\n' if self._id else ''}'\
+        return f"{'Id: ' + str(self._id) + '\n' if self._id else ''}"\
                f"Name: {self.name}\n"\
                f"Last Name: {self.last_name}\n"\
                f"Date: {self.date_of_birth}\n"\
@@ -72,7 +72,7 @@ class Book(BookBase):
 
         self.__id = _id
 
-        self.validate()
+        assert self.validate(), "Invalid data"
 
     @property
     def _id(self):
@@ -86,12 +86,12 @@ class Book(BookBase):
             ''', (self.name, self.category_name, self.number_of_pages, self.date_of_issue, self.author_id))
 
     def __str__(self):
-        return f'{'Id: ' + str(self._id) + '\n' if self._id else ''}'\
-               f'Name: {self.name}\n'\
-               f'Category: {self.category_name}\n'\
-               f'Number of pages: {self.number_of_pages}\n'\
-               f'Date of issue: {self.date_of_issue}\n'\
-               f'Author ID: {self.author_id}'
+        return f"{'Id: ' + str(self._id) + '\n' if self._id else ''}"\
+               f"Name: {self.name}\n"\
+               f"Category: {self.category_name}\n"\
+               f"Number of pages: {self.number_of_pages}\n"\
+               f"Date of issue: {self.date_of_issue}\n"\
+               f"Author ID: {self.author_id}"
 
     def __repr__(self):
-        return f'Book({self._id}, {self.name})'
+        return f"Book({self._id}, {self.name})"
