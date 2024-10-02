@@ -71,14 +71,16 @@ def find_youngest_author():
 
 
 def find_authors_without_books():
-    authors_without_books = session.query(Author).outerjoin(author_book_table).filter(author_book_table.c.book_id == None).all()
+    authors_without_books = session.query(Author).outerjoin(author_book_table).filter(
+        author_book_table.c.book_id is None).all()
     print("Authors without books:")
     for author in authors_without_books:
         print(f"{author.first_name} {author.last_name}")
 
 
 def find_authors_with_more_than_3_books():
-    authors = session.query(Author).join(author_book_table).group_by(Author.id).having(func.count(author_book_table.c.book_id) > 3).limit(5).all()
+    authors = session.query(Author).join(author_book_table).group_by(Author.id).having(
+        func.count(author_book_table.c.book_id) > 3).limit(5).all()
     print("Authors with more than 3 books:")
     for author in authors:
         print(author, end="\n\n")
